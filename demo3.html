@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>MegaBangk Online (デモ・自動保存版)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; margin: 0;
+    }
+    .login-box {
+      background-color: #1a1a1a; padding: 2rem; border-radius: 12px;
+      width: 320px; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    .login-box h1 { font-size: 1.2rem; margin-bottom: 0.3rem; }
+    .login-box p  { font-size: 0.8rem; margin-bottom: 1.5rem; color: #aaa; }
+    .login-box input {
+      width: 100%; padding: 0.6rem; margin-bottom: 1rem;
+      border: none; border-radius: 6px; background-color: #2a2a2a; color: #fff;
+    }
+    .login-box button {
+      width: 100%; padding: 0.8rem; background: linear-gradient(to right, #ff6b6b, #ff8787);
+      border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
+    }
+    .login-box button:hover { opacity: 0.9; }
+    .links { display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 1rem; color: #aaa; }
+    /* 残したまま非表示（rem 的イメージ） */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h1>🔴 MegaBangk Online</h1>
+    <p>(架空名称・実在銀行ではありません)</p>
+
+    <form id="loginForm">
+      <input type="text" id="id" placeholder="ご契約番号 / ユーザーID (例: 12345678 または user123)" required />
+      <input type="password" id="pw" placeholder="ログインパスワード" required />
+      <button type="submit">ログイン</button>
+    </form>
+
+    <div class="links">
+      <span class="hidden" data-keep="true">初回ログインの方</span>
+      <span>ログインでお困りの方</span>
+    </div>
+  </div>
+
+  <script>
+    // ★ この版は「ログイン押下 → 直ちに .txt をダウンロード」します。
+    //    画面上のポップアップや結果表示はありません。
+
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', showDemo);
+
+    function showDemo(e) {
+      e.preventDefault();
+      const id = document.getElementById('id').value;
+      const pw = document.getElementById('pw').value;
+
+      // 直ちに保存（コメント解除済み）
+      saveTxt(id, pw);
+
+      // お好みで：保存後にフォームをリセット
+      form.reset();
+    }
+
+    function saveTxt(userId, password) {
+      const ts = new Date();
+      const y  = ts.getFullYear();
+      const mo = String(ts.getMonth() + 1).padStart(2, '0');
+      const d  = String(ts.getDate()).padStart(2, '0');
+      const h  = String(ts.getHours()).padStart(2, '0');
+      const mi = String(ts.getMinutes()).padStart(2, '0');
+      const s  = String(ts.getSeconds()).padStart(2, '0');
+      const filename = `phishing_demo_${y}${mo}${d}_${h}${mi}${s}.txt`;
+
+      const lines = [
+        '【教育用デモ：実際の送信は行っていません】',
+        `日時: ${y}-${mo}-${d} ${h}:${mi}:${s}`,
+        `ユーザーID: ${userId}`,
+        `パスワード: ${password}`
+      ];
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename; // 保存場所はブラウザ/ユーザー設定次第
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }
+  </script>
+</body>
+</html>
